@@ -1,133 +1,68 @@
-const bycrypt = require("bycryptjs");
+const bcrypt = require("bcryptjs");
+const pool = require("../config/database");
 
 const registerUser = async (req, res) => {
     try {
-        const { fullName, email, password } = req.body;
+        const { fullName, email, password, programId } = req.body;
 
-        //1. validate input
-        if (!fullName || !email || !password) {
+        // Check that all required fields were provided
+        if (!fullName || !email || !password || !programId) {
             return res.status(400).json({
-                message: "Full name, email and password are required"
+                message: "Full name, email, password and program are required"
             });
         }
 
-        //2. Basic password validation
-        if (password.length < 8) {
-            return res.status(400).json({
-                message: "Password must be at least 8 characters long."
-            });
-        }
-
-        //3. Check if email already exists
-        const existingUser = await pool.query(
-            "SELECT * FROM users WHERE email = $1",
-            [email.toLowerCase()]
+        // Check if the email already exists
+        const existingStudent = await pool.query(
+            "SELECT id FROM students WHERE email = $1",
+            [email]
         );
 
-        if (existingUser.rows.length > 0) {
+        if (existingStudent.rows.length > 0) {
             return res.status(409).json({
-                message: "Email already exists."
+                message: "A student with this email already exists"
             });
         }
 
-        //4. Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        //5. Save the user to the database
-        const result = await pool.query(
-            `INSERT INTO users 
-            (full_name, email, password) 
-            VALUES ($1, $2, $3) 
-            RETURNING id, full_name, email, is_verified, created_at`,
-            [
-                fullName,
-                email.toLowerCase(),
-                hashedPassword
-            ]
+        // Check that the selected program exists
+        const program = await pool.query(
+            "SELECT id, name FROM programs WHERE id = $1",
+            [programId]
         );
 
-        //6. Return newly created user
+        if (program.rows.length === 0) {
+            return res.status(404).json({
+                message: "Selected program does not exist"
+            });
+        }
+
+        // Hash the password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        // Create the student
+        const newStudent = await pool.query(
+            `INSERT INTO students 
+       (full_name, email, password, program_id)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, full_name, email, program_id, created_at`,
+            [fullName, email, hashedPassword, programId]
+        );
+
         return res.status(201).json({
-            message: "User registered successfully.",
-            user: result.rows[0]
+            message: "Student registered successfully",
+            student: newStudent.rows[0]
         });
+
     } catch (error) {
-        console.error("Error registering user:", error);
+        console.error("Registration error:", error);
 
         return res.status(500).json({
-            message: "Internal server error."
-        });
-    }
-};
-
-//user login function
-
-const loginUser = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-
-        //1. Validate input
-        if (!email || !password) {
-            return res.status(400).json({
-                message: "Email and password are required."
-            });
-        }
-
-        //2. Find user by email
-        const userResult = await pool.query(
-            `SELECT * 
-            FROM users 
-            WHERE email = $1`,
-            [email.toLowerCase()]
-        );
-
-        if (userResult.rows.length === 0) {
-            return res.status(401).json({
-                message: "Invalid email or password."
-            });
-        }
-
-        const user = userResult.rows[0];
-
-        //3. Compare password with hashed password
-        const isPasswordValid = await bcrypt.compare(
-            password,
-            user.password
-        );
-
-        if (!isPasswordValid) {
-            return res.status(401).json({
-                message: "Invalid email or password."
-            });
-        }
-
-        //4. Generate JWT token
-        const token = jwt.sign(
-            {
-                userId: user.id,
-                email: user.email
-            },
-            process.env.JWT_SECRET,
-            {
-                expiresIn: "1h"
-            }
-        );
-
-        //5. Send response 
-        return res.status(200).json({
-            message: "Login successful.",
-            token
-        });
-    } catch (error) {
-        console.error("Error logging in user:", error);
-
-        return res.status(500).json({
-            message: "Internal server error."
+            message: "Server error while registering student"
         });
     }
 };
 
 module.exports = {
-    registerUser,
-    loginUser
+    registerUser
 };
