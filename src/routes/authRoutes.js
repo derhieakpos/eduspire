@@ -5,7 +5,9 @@ const {
     loginUser
 } = require('../controllers/authController');
 
-const router = express.Router(); 
+const authenticateToken = require("../middleware/authMiddleware");
+
+const router = express.Router();
 
 router.get("/test", (req, res) => {
     res.json({
@@ -17,5 +19,12 @@ router.get("/test", (req, res) => {
 router.post("/register", registerUser);
 // Login route
 router.post("/login", loginUser);
+
+router.get("/profile", authenticateToken, (req, res) => {
+    res.json({
+        message: "You are authenticated",
+        user: req.user
+    });
+});
 
 module.exports = router;
