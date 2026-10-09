@@ -1,0 +1,43 @@
+.courseContainer{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100vh;
+  padding: 0px 10px;
+  background-color: rgb(240, 251, 255);
+}
+
+table{
+  width: 100%;
+  text-align: center;
+}
+.list thead{
+ background: linear-gradient(
+    90deg,
+    #023E8A,
+    #0077B6,
+    #00B4D8
+  );
+}
+.list th {
+  color: white;
+  padding: 18px 20px;
+  text-align: left;
+  font-size: 18px;
+}
+.list td {
+  padding: 10px;
+  border-bottom: 1px solid #CAF0F8;
+  color: #03045E;
+  background-color: white;
+}
+.list tr:last-child td {
+  border-bottom: none;
+}
+.register{
+  padding: 10px 14px;
+  border-radius: 15px;
+  border: none;
+  background-color: #1768fecb;
+  cursor: pointer;
+}

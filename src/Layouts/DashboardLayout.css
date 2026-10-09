@@ -1,0 +1,17 @@
+.layout {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+}
+
+main{
+  flex: 1;
+  min-height: 100vh;
+}
+
+@media(max-wwidth: 769px) {
+  .layout{
+    display: block;
+    
+  }
+}

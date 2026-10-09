@@ -1,0 +1,64 @@
+aside{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 200px;
+  background-color: #023E8A;
+  min-height: 100vh;
+  padding-left: 10px;
+}
+aside h2{
+  color: #c6f0fc;
+}
+nav{
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: -10px;
+} 
+a{
+  display: flex;
+  gap: 15px;
+  text-decoration: none;
+  align-items: center;
+  color: #c6f0fc;
+  padding-top: 2px;
+  font-size: 15px;
+}
+.sideLogo{
+  width: 65%;
+  display: block;
+}
+.icons{
+  font-size: 20px;
+}
+.hamburger{
+  display: none;
+}
+
+@media(max-width: 769px) {
+  aside{
+    width: 100%;
+    min-height: auto;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 0px 5px;
+  }
+  nav{
+    flex-direction: row;
+    justify-content: space-around;
+    padding-bottom: 15px;
+    margin-top: 15px;
+  }
+  aside h2{
+    display: none;
+  }
+  .navLink p{
+    display: none;
+  }
+  .sideLogo{
+    display: none;
+  }
+}
+

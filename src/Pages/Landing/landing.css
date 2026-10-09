@@ -1,0 +1,33 @@
+.landingContainer{
+  background-color: #1e6cd1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.logoPic{
+  width: 30%;
+  display: block;
+  margin: 0 auto;
+}
+.entryBtn{
+  display: flex;
+  gap: 20px;
+}
+.entryBtn button{
+  border: none;
+  margin-top: -30px;
+  border-radius: 10px;
+  padding: 15px 25px;
+  background-color: #4cabff;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+}
+
+@media(max-width: 769px) {
+  .logoPic{
+    width: 70%;
+  }
+}
